@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Suspicious Domain Checker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Suspicious Domain Checker</h1>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <article class="contrast">
+            <ul>
+              {% for msg in messages %}
+                <li>{{ msg }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+        {% endif %}
+      {% endwith %}
+
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <label for="file">Upload Excel file (with sheet 'UserManager'):</label>
+        <input type="file" id="file" name="file" accept=".xlsx,.xls" required>
+        <small>Will read column 'ACTOR_USER_EMAIL' from the 'UserManager' sheet.</small>
+        <button type="submit">Check Domains</button>
+      </form>
+
+      <p>Ensure <code>SuspiciousDomains.xlsx</code> exists in the same folder as this app.</p>
+    </main>
+  </body>
+  </html>
+
+

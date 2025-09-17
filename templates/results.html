@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Results - Suspicious Domain Checker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Results</h1>
+      <p>Total: {{ total }} | Suspicious: {{ suspicious_count }}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>ACTOR_USER_EMAIL</th>
+            <th>email_domain</th>
+            <th>flag</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>{{ row["ACTOR_USER_EMAIL"] }}</td>
+              <td>{{ row["email_domain"] }}</td>
+              <td>{% if row["suspicious"] == "suspicious" %}<strong>suspicous</strong>{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p>
+        <a href="/" role="button">Back</a>
+      </p>
+    </main>
+  </body>
+  </html>
+
+
