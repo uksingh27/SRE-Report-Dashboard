@@ -1,0 +1,45 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.so
+*.pyc
+
+# Runtime data (mounted as volumes, not source)
+uploads/
+
+# Docker build artifacts
+*.tar
+*.tar.gz
+*.zip
+
+# Dev / sample files
+dev-files/
+*.xlsx
+*.xls
+~$*
+
+# IDE / workspace
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs (local reference only, not part of the app)
+docs/
+
+# Temp / logs
+*.tmp
+*.temp
+*.log

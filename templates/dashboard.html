@@ -3,224 +3,1661 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cybersecurity Dashboard - Suspicious Domain Checker</title>
+    <title>Cybersecurity Dashboard - Multi-Processor Analysis</title>
+    <!-- Updated: Provider Breakdown chart moved to bottom - Cache bust: 2024 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/theme/mermaid.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/gridjs.umd.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       :root { color-scheme: dark; }
-      body { background-color: #0b1020; }
+      body { background-color: #0a0a0a; }
+      .page { display: none; }
+      .page.active { display: block; }
     </style>
   </head>
   <body class="text-gray-100">
     <div class="flex min-h-screen">
-      <aside class="w-64 bg-slate-900/80 border-r border-slate-800 p-4">
-        <h1 class="text-xl font-semibold mb-6">Security Dashboard</h1>
+        <aside class="w-64 bg-gradient-to-b from-purple-900/90 to-indigo-900/90 border-r border-purple-700 p-4">
+          <div class="flex items-center mb-6">
+            <div class="flex items-center">
+              <span class="text-2xl font-bold text-white">N</span>
+              <span class="text-2xl font-bold text-white">i</span>
+              <span class="text-2xl font-bold text-white">C</span>
+              <span class="text-2xl font-bold text-white">E</span>
+              <div class="w-2 h-2 bg-blue-500 rounded-full ml-1 mt-1"></div>
+            </div>
+          </div>
         <nav class="space-y-2">
-          <a class="block px-3 py-2 rounded bg-slate-800 hover:bg-slate-700" href="#upload">Upload & Analyze</a>
-          <a class="block px-3 py-2 rounded bg-slate-800 hover:bg-slate-700" href="#insights">Insights</a>
-          <a class="block px-3 py-2 rounded bg-slate-800 hover:bg-slate-700" href="#results">Results</a>
+          <!-- Main Navigation -->
+          <button class="menu-btn block w-full text-left px-3 py-2 rounded bg-purple-800/70 hover:bg-purple-700/80 text-purple-100 transition-all duration-200" id="menu-upload">📁 Upload & Analyze</button>
+          <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200" id="menu-suspicious">🔍 Suspicious Domain Analysis</button>
+          <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200" id="menu-suspicious-users">🚨 Suspicious User Activities</button>
+          <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200" id="menu-accesskeys">🔑 Access Key Management</button>
+          <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200" id="menu-emaildomains">📧 Email Domains Update</button>
+          
+          
+          <!-- Configuration Group -->
+          <div class="mt-6">
+            <h3 class="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-3 px-3">Configuration</h3>
+            <div class="space-y-1 pl-3">
+              <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200 text-sm" id="menu-domains">⚙️ Manage Suspicious Domains</button>
+              <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200 text-sm" id="menu-tenants">🏢 Manage Tenant Exceptions</button>
+              <button class="menu-btn block w-full text-left px-3 py-2 rounded hover:bg-purple-700/80 text-purple-100 transition-all duration-200 text-sm" id="menu-usernames">👤 Manage Suspicious Usernames</button>
+            </div>
+          </div>
         </nav>
       </aside>
-      <main class="flex-1 p-6 space-y-8">
-        <section id="upload" class="space-y-4">
-          <h2 class="text-lg font-semibold">Upload Excel</h2>
-          <div id="dropzone" class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-slate-500 cursor-pointer">
-            <p class="mb-2">Drag and drop your Excel (.xlsx) file here or click to select.</p>
-            <input id="fileInput" type="file" accept=".xlsx,.xls" class="hidden" />
+      
+      <main class="flex-1 p-6">
+        <!-- Upload & Analyze Page -->
+        <div id="page-upload" class="page active space-y-8">
+          <div class="bg-gradient-to-br from-slate-900/80 to-gray-900/80 border border-purple-600/50 rounded-lg p-6 mb-6 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4 text-cyan-400">SRE Report Analyzer - Process Description</h3>
+            <p class="text-gray-200 mb-4">This tool analyses excel files sent by SRE Team to CSOC for faster detection of malicious activities within Business Units (BUs).</p>
+            
+            <p class="text-gray-200 mb-4">CSOC mailbox receives various reports in Excel file via email every day from SRE Platform team. CSOC engineer analyses all the reports as per the process. It has been observed that the manual processing takes several hours if not days.</p>
+            
+            <p class="text-gray-200 mb-4">To minimize the processing time on analysing the SRE reports, this tool has been developed to enable faster detection of malicious activities within Business Units (BUs).</p>
+            
+            <h3 class="text-lg font-semibold mb-4 text-cyan-400">Process Summary</h3>
+            <p class="text-gray-200 mb-4">Based on the information provided in <a href="https://nice-ce-cxone-prod.atlassian.net/wiki/spaces/ICInfoSec/pages/503875002/Guide+to+performing+checks+on+reports+sent+by+SRE+team" class="text-blue-400 hover:text-blue-300 underline transition-colors duration-200">Guide to performing checks on reports sent by SRE team</a>, this tool performs following three tasks:</p>
+            
+            <div class="space-y-4 text-gray-200">
+              <div class="border border-emerald-600/50 rounded-lg shadow-lg">
+                <button class="collapsible-btn w-full text-left px-4 py-3 bg-gradient-to-r from-emerald-800/70 to-teal-800/70 hover:from-emerald-700/80 hover:to-teal-700/80 rounded-t-lg flex justify-between items-center transition-all duration-200" onclick="toggleCollapsible('malicious-content')">
+                  <h4 class="font-semibold text-emerald-300">1. Malicious domain analysis</h4>
+                  <span class="text-emerald-200 transform transition-transform duration-200" id="malicious-arrow">▼</span>
+                </button>
+                <div class="collapsible-content hidden px-4 py-3 bg-gradient-to-r from-emerald-900/30 to-teal-900/30 rounded-b-lg" id="malicious-content">
+                  <p class="mb-2 text-gray-100">This task breaks down the actor's email address found in the UserManager tab of the excel file into two components. The domain component gets compared with the suspicious domains listed in the static excel file, "SuspiciousDomains.xlsx" embedded in the program. After upload of the original report, the file gets analysed after clicking on "Analyze All" button. Post analysis, the results can be seen by clicking the respective navigation menus. For example, by clicking on "Suspicious Domain Analysis", it will display two tables: (1) Suspicious Activities and (2) Safe Activities tables.</p>
+                </div>
+              </div>
+              
+              <div class="border border-amber-600/50 rounded-lg shadow-lg">
+                <button class="collapsible-btn w-full text-left px-4 py-3 bg-gradient-to-r from-amber-800/70 to-orange-800/70 hover:from-amber-700/80 hover:to-orange-700/80 rounded-t-lg flex justify-between items-center transition-all duration-200" onclick="toggleCollapsible('accesskey-content')">
+                  <h4 class="font-semibold text-amber-300">2. Access Key Analysis</h4>
+                  <span class="text-amber-200 transform transition-transform duration-200" id="accesskey-arrow">▼</span>
+                </button>
+                <div class="collapsible-content hidden px-4 py-3 bg-gradient-to-r from-amber-900/30 to-orange-900/30 rounded-b-lg" id="accesskey-content">
+                  <p class="mb-2 text-gray-100">This task analyses information provided in the AccessKeyManagement tab of the uploaded excel file. If it finds more than 10 access keys created in a Business Unit, it reports them in the result table. However, there are some business units given an exception, i.e. it does not report if the tenant name is matched to the tenant name provided in the "TenantExceptionList.xlsx" static file embedded in the program</p>
+                </div>
+              </div>
+              
+              <div class="border border-pink-600/50 rounded-lg shadow-lg">
+                <button class="collapsible-btn w-full text-left px-4 py-3 bg-gradient-to-r from-pink-800/70 to-rose-800/70 hover:from-pink-700/80 hover:to-rose-700/80 rounded-t-lg flex justify-between items-center transition-all duration-200" onclick="toggleCollapsible('emaildomain-content')">
+                  <h4 class="font-semibold text-pink-300">3. Email Domain Change detection</h4>
+                  <span class="text-pink-200 transform transition-transform duration-200" id="emaildomain-arrow">▼</span>
+                </button>
+                <div class="collapsible-content hidden px-4 py-3 bg-gradient-to-r from-pink-900/30 to-rose-900/30 rounded-b-lg" id="emaildomain-content">
+                  <p class="mb-2 text-gray-100">This task analysis information provided in the UserEmailDomainStats tab of the uploaded excel file. If the "CHANGED_TO_VALUE" contains domains that match the suspicious domains listed in the in the embedded excel file, "SuspiciousDomains.xlsx", it reports the results in a table named "Suspicious Domains Activities" followed by another table named "Safe Email Domain Activities"</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="flex gap-3">
-            <button id="analyzeBtn" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded disabled:opacity-40" disabled>Analyze</button>
-            <button id="exportCsvBtn" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded" disabled>Export CSV</button>
-            <button id="exportXlsxBtn" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded" disabled>Export Excel</button>
-          </div>
-          <p class="text-sm text-slate-400">Reads sheet <code>UserManager</code>, column <code>ACTOR_USER_EMAIL</code>. Suspicious domains loaded from <code>SuspiciousDomains.xlsx</code>.</p>
-        </section>
+          <h2 class="text-lg font-semibold text-cyan-300">Upload Excel File.</h2>
+          <section class="space-y-4">
+            <div id="dropzone" class="border-2 border-dashed border-purple-500/50 rounded-lg p-8 text-center hover:border-purple-400/70 cursor-pointer bg-gradient-to-br from-purple-900/20 to-indigo-900/20 transition-all duration-200">
+              <p class="mb-2 text-gray-200">Drag and drop your Excel (.xlsx) file here or click to select.</p>
+              <input id="fileInput" type="file" accept=".xlsx,.xls" class="hidden" />
+            </div>
+            <div class="flex gap-3">
+              <button id="analyzeBtn" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-4 py-2 rounded text-white font-medium transition-all duration-200 disabled:opacity-40 shadow-lg" disabled>Analyze All</button>
+              <button id="exportCsvBtn" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-2 rounded text-white font-medium transition-all duration-200 shadow-lg" disabled>Export CSV</button>
+              <button id="exportXlsxBtn" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 px-4 py-2 rounded text-white font-medium transition-all duration-200 shadow-lg" disabled>Export Excel</button>
+            </div>
+            <p class="text-sm text-gray-400">Upload Excel file to analyze all sheets. Use individual menu items for specific analysis.</p>
+          </section>
+        </div>
 
-        <section id="insights" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
-            <h3 class="text-sm font-medium mb-2">Suspicious vs Safe</h3>
-            <canvas id="pieChart" height="120"></canvas>
-          </div>
-          <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
-            <h3 class="text-sm font-medium mb-2">Top Suspicious Domains</h3>
-            <ul id="topDomains" class="space-y-1 text-sm text-slate-300"></ul>
-          </div>
-          <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
-            <h3 class="text-sm font-medium mb-2">Provider Breakdown</h3>
-            <canvas id="barChart" height="120"></canvas>
-          </div>
-        </section>
+        <!-- Suspicious Domain Analysis Page -->
+        <div id="page-suspicious" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-emerald-300">🔍 Suspicious Domain Analysis</h2>
+          <section class="space-y-4">
+            <div id="suspicious-dropzone" class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-slate-500 cursor-pointer">
+              <p class="mb-2">Upload Excel file for suspicious domain analysis</p>
+              <input id="suspicious-fileInput" type="file" accept=".xlsx,.xls" class="hidden" />
+            </div>
+          </section>
+          
+          <section id="suspicious-results" class="space-y-6" style="display: none;">
+            <!-- Top Row: Pie Charts and Top Domains -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 flex flex-col items-center justify-center min-h-[300px]">
+                <h3 class="text-lg font-medium mb-4 text-emerald-300">Actor Domain - Suspicious vs Safe</h3>
+                <div class="flex justify-center items-center flex-1">
+                  <canvas id="suspicious-pieChart" width="250" height="250"></canvas>
+                </div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 flex flex-col items-center justify-center min-h-[300px]">
+                <h3 class="text-lg font-medium mb-4 text-emerald-300">User Domain - Suspicious vs Safe</h3>
+                <div class="flex justify-center items-center flex-1">
+                  <canvas id="suspicious-userPieChart" width="250" height="250"></canvas>
+                </div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 flex flex-col justify-center min-h-[300px]">
+                <h3 class="text-lg font-medium mb-4 text-emerald-300">Top Suspicious Domains</h3>
+                <div class="flex-1 flex items-start justify-center pt-4">
+                  <ul id="suspicious-topDomains" class="space-y-2 text-sm text-slate-300 w-full max-w-md"></ul>
+                </div>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-red-400">🚨 Actor Domain - Suspicious Activities</h3>
+                <div id="suspicious-suspiciousTable"></div>
+              </div>
+              
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-green-400">✅ Actor Domain - Safe Activities</h3>
+                <div id="suspicious-safeTable"></div>
+              </div>
+              
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-red-400">🚨 User Domain - Suspicious Activities</h3>
+                <div id="suspicious-userSuspiciousTable"></div>
+              </div>
+              
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-green-400">✅ User Domain - Safe Activities</h3>
+                <div id="suspicious-userSafeTable"></div>
+              </div>
+            </div>
+            
+            <!-- Provider Tables - Side by side -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Actor Email Domain Provider Table -->
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+                <h3 class="text-lg font-medium mb-4 text-emerald-300">Actor Email Domain Provider</h3>
+                <div id="suspicious-providerTable"></div>
+              </div>
+              
+              <!-- User Email Domain Provider Table -->
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+                <h3 class="text-lg font-medium mb-4 text-emerald-300">User Email Domain Provider</h3>
+                <div id="suspicious-userProviderTable"></div>
+              </div>
+            </div>
+          </section>
+        </div>
 
-        <section id="results" class="space-y-3">
-          <h2 class="text-lg font-semibold">Results</h2>
-          <div id="table" class="bg-slate-900/40 rounded border border-slate-800"></div>
-        </section>
+        <!-- Manage Suspicious Domains Page -->
+        <div id="page-domains" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-orange-300">⚙️ Manage Suspicious Domains</h2>
+          
+          <div class="bg-gradient-to-br from-slate-900/80 to-gray-900/80 border border-orange-600/50 rounded-lg p-6 mb-6 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4 text-orange-400">Suspicious Domains Management</h3>
+            <p class="text-gray-200 mb-4">Manage the list of suspicious domains used for analysis. Add, remove, or edit domains as needed.</p>
+            <p class="text-gray-200 mb-4">Changes are automatically saved and will be used in future analyses.</p>
+          </div>
+          
+          <section class="space-y-6">
+            <!-- Add New Domain -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-orange-300">Add New Domain</h3>
+              <div class="flex gap-3">
+                <input type="text" id="new-domain-input" placeholder="Enter domain (e.g., example.com)" 
+                       class="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-400 focus:border-orange-500 focus:outline-none">
+                <button id="add-domain-btn" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                  Add Domain
+                </button>
+              </div>
+            </div>
+            
+            <!-- Domains List -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-orange-300">Current Suspicious Domains</h3>
+              <div id="domains-list" class="space-y-2">
+                <!-- Domains will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-3">
+              <button id="save-domains-btn" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Save Changes
+              </button>
+              <button id="reload-domains-btn" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Reload from File
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Manage Tenant Exceptions Page -->
+        <div id="page-tenants" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-blue-300">🏢 Manage Tenant Exceptions</h2>
+          
+          <div class="bg-gradient-to-br from-slate-900/80 to-gray-900/80 border border-blue-600/50 rounded-lg p-6 mb-6 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4 text-blue-400">Tenant Exception Management</h3>
+            <p class="text-gray-200 mb-4">Manage the list of tenant exceptions used for access key analysis. Tenants in this list will not be flagged for having more than 10 access keys.</p>
+            <p class="text-gray-200 mb-4">Changes are automatically saved and will be used in future analyses.</p>
+          </div>
+          
+          <section class="space-y-6">
+            <!-- Add New Tenant -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-blue-300">Add New Tenant Exception</h3>
+              <div class="flex gap-3">
+                <input type="text" id="new-tenant-input" placeholder="Enter tenant name (e.g., Development Tenant)" 
+                       class="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none">
+                <button id="add-tenant-btn" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                  Add Tenant
+                </button>
+              </div>
+            </div>
+            
+            <!-- Tenants List -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-blue-300">Current Tenant Exceptions</h3>
+              <div id="tenants-list" class="space-y-2">
+                <!-- Tenants will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-3">
+              <button id="save-tenants-btn" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Save Changes
+              </button>
+              <button id="reload-tenants-btn" class="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Reload from File
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Suspicious User Activities Page -->
+        <div id="page-suspicious-users" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-red-300">🚨 Suspicious User Activities</h2>
+          
+          <div class="bg-gradient-to-br from-slate-900/80 to-gray-900/80 border border-red-600/50 rounded-lg p-6 mb-6 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4 text-red-400">Suspicious Username Detection</h3>
+            <p class="text-gray-200 mb-4">This analysis scans user activities for suspicious usernames that match patterns in the configured suspicious usernames list.</p>
+            <p class="text-gray-200 mb-4">The system checks ACTOR_USERNAME, ACTOR_USER_EMAIL, USER_NAME, and USER_EMAIL columns for matches.</p>
+          </div>
+          
+          <section class="space-y-6">
+            <!-- File Upload -->
+            <div id="suspicious-users-dropzone" class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-slate-500 cursor-pointer">
+              <p class="mb-2">Upload Excel file for suspicious user activities analysis</p>
+              <p class="text-sm text-slate-400">Supports .xlsx and .xls files</p>
+              <input type="file" id="suspicious-users-fileInput" accept=".xlsx,.xls" class="hidden">
+            </div>
+            
+            <!-- Summary Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 text-center">
+                <h3 class="text-lg font-medium mb-2 text-blue-300">Total Activities</h3>
+                <div id="suspicious-users-total" class="text-3xl font-bold text-blue-400">0</div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 text-center">
+                <h3 class="text-lg font-medium mb-2 text-red-300">Suspicious Activities</h3>
+                <div id="suspicious-users-suspicious" class="text-3xl font-bold text-red-400">0</div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-6 text-center">
+                <h3 class="text-lg font-medium mb-2 text-green-300">Safe Activities</h3>
+                <div id="suspicious-users-safe" class="text-3xl font-bold text-green-400">0</div>
+              </div>
+            </div>
+            
+            <!-- Suspicious Usernames Found Table -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-red-300">🚨 Suspicious Usernames Found</h3>
+              <div id="suspicious-usernames-table" class="overflow-x-auto"></div>
+            </div>
+            
+            <!-- Top Suspicious Usernames -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-orange-300">Top Suspicious Usernames</h3>
+              <div id="suspicious-users-topUsernames" class="space-y-2"></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Manage Suspicious Usernames Page -->
+        <div id="page-usernames" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-orange-300">👤 Manage Suspicious Usernames</h2>
+          
+          <div class="bg-gradient-to-br from-slate-900/80 to-gray-900/80 border border-orange-600/50 rounded-lg p-6 mb-6 shadow-2xl">
+            <h3 class="text-lg font-semibold mb-4 text-orange-400">Suspicious Username Management</h3>
+            <p class="text-gray-200 mb-4">Manage the list of suspicious usernames used for user activity analysis. Usernames in this list will be flagged when found in user activities.</p>
+            <p class="text-gray-200 mb-4">Changes are automatically saved and will be used in future analyses.</p>
+          </div>
+          
+          <section class="space-y-6">
+            <!-- Add New Username -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-orange-300">Add New Suspicious Username</h3>
+              <div class="flex gap-3">
+                <input type="text" id="new-username-input" placeholder="Enter suspicious username (e.g., condado)" 
+                       class="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-400 focus:border-orange-500 focus:outline-none">
+                <button id="add-username-btn" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                  Add Username
+                </button>
+              </div>
+            </div>
+            
+            <!-- Usernames List -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-6">
+              <h3 class="text-lg font-medium mb-4 text-orange-300">Current Suspicious Usernames</h3>
+              <div id="usernames-list" class="space-y-2">
+                <!-- Usernames will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-3">
+              <button id="save-usernames-btn" class="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Save Changes
+              </button>
+              <button id="reload-usernames-btn" class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 px-4 py-2 rounded text-white font-medium transition-all duration-200">
+                Reload from File
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Access Key Management Page -->
+        <div id="page-accesskeys" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-amber-300">🔑 Access Key Management</h2>
+          <section class="space-y-4">
+            <div id="accesskeys-dropzone" class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-slate-500 cursor-pointer">
+              <p class="mb-2">Upload Excel file for access key analysis</p>
+              <input id="accesskeys-fileInput" type="file" accept=".xlsx,.xls" class="hidden" />
+            </div>
+          </section>
+          
+          <section id="accesskeys-results" class="space-y-6" style="display: none;">
+            <!-- Top Section: Flagged Tenants -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+              <h3 class="text-md font-medium mb-3 text-red-400">🚨 Suspicious Tenants (>10 Access Keys)</h3>
+              <div id="accesskeys-flagged-tenants" class="text-sm text-slate-300"></div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Total Tenants</h3>
+                <div id="accesskeys-total-tenants" class="text-lg font-semibold text-blue-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Suspicious Tenants</h3>
+                <div id="accesskeys-suspicious-count" class="text-lg font-semibold text-red-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Exception Tenants</h3>
+                <div id="accesskeys-exception-count" class="text-lg font-semibold text-yellow-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Non-Exception Tenants</h3>
+                <div id="accesskeys-non-exception-count" class="text-lg font-semibold text-green-400"></div>
+              </div>
+            </div>
+            
+            <!-- Bottom Section: Two Tables -->
+            <div class="space-y-4">
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-red-400">🚨 Suspicious Access Key Activities</h3>
+                <div id="accesskeys-suspicious-table"></div>
+              </div>
+              
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-blue-400">📋 Non-Exception Access Key Activities</h3>
+                <div id="accesskeys-all-table"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Email Domains Update Page -->
+        <div id="page-emaildomains" class="page space-y-8">
+          <h2 class="text-lg font-semibold text-pink-300">📧 Email Domains Update</h2>
+          <section class="space-y-4">
+            <div id="emaildomains-dropzone" class="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-slate-500 cursor-pointer">
+              <p class="mb-2">Upload Excel file for email domains update analysis</p>
+              <input id="emaildomains-fileInput" type="file" accept=".xlsx,.xls" class="hidden" />
+            </div>
+          </section>
+          
+          <section id="emaildomains-results" class="space-y-6" style="display: none;">
+            <!-- Top Section: Suspicious Domain Matches -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+              <h3 class="text-md font-medium mb-3 text-red-400">🚨 Suspicious Domain Matches in CHANGED_TO_VALUE</h3>
+              <div id="emaildomains-suspicious-matches" class="text-sm text-slate-300"></div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Total Updates</h3>
+                <div id="emaildomains-total-updates" class="text-lg font-semibold text-blue-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Suspicious Matches</h3>
+                <div id="emaildomains-suspicious-count" class="text-lg font-semibold text-red-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Safe Matches</h3>
+                <div id="emaildomains-safe-count" class="text-lg font-semibold text-green-400"></div>
+              </div>
+              <div class="bg-slate-900/70 border border-slate-800 rounded p-4">
+                <h3 class="text-sm font-medium mb-2">Unique Domains</h3>
+                <div id="emaildomains-unique-domains" class="text-lg font-semibold text-purple-400"></div>
+              </div>
+            </div>
+            
+            <!-- Bottom Section: Two Tables -->
+            <div class="space-y-4">
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-red-400">🚨 Suspicious Domain Activities</h3>
+                <div id="emaildomains-suspicious-table"></div>
+              </div>
+              
+              <div class="bg-slate-900/40 rounded border border-slate-800 p-4">
+                <h3 class="text-md font-medium mb-3 text-green-400">✅ Safe Email Domain Activities</h3>
+                <div id="emaildomains-all-table"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
       </main>
     </div>
 
     <script>
-      window.addEventListener('DOMContentLoaded', () => {
-      const dropzone = document.getElementById('dropzone');
-      const fileInput = document.getElementById('fileInput');
-      const analyzeBtn = document.getElementById('analyzeBtn');
-      const exportCsvBtn = document.getElementById('exportCsvBtn');
-      const exportXlsxBtn = document.getElementById('exportXlsxBtn');
-
-      let selectedFile = null;
-      let lastRows = [];
-      let pieChart = null; let barChart = null;
-      const statusEl = document.createElement('div');
-      statusEl.className = 'text-sm text-slate-300';
-      document.querySelector('#upload').appendChild(statusEl);
-
-      const enableButtons = (enabled) => {
-        analyzeBtn.disabled = !enabled;
-        exportCsvBtn.disabled = !enabled || lastRows.length === 0;
-        exportXlsxBtn.disabled = !enabled || lastRows.length === 0;
-      };
-
-      if (!window.gridjs) {
-        alert('Grid.js library failed to load. Please check your network and reload.');
-        return;
+      // Collapsible functionality
+      function toggleCollapsible(contentId) {
+        const content = document.getElementById(contentId);
+        const arrow = document.getElementById(contentId.replace('-content', '-arrow'));
+        
+        if (content.classList.contains('hidden')) {
+          content.classList.remove('hidden');
+          arrow.style.transform = 'rotate(180deg)';
+        } else {
+          content.classList.add('hidden');
+          arrow.style.transform = 'rotate(0deg)';
+        }
       }
 
-      const buildTable = (rows) => {
-        const data = rows.map(r => [
-          r.ACTOR_USER_EMAIL || '',
-          r.email_domain || '',
-          r.provider || '',
-          r.flag || (r.suspicious ? 'suspicious' : 'safe'),
-          r.severity || 'none',
-        ]);
-        new gridjs.Grid({
-          columns: [
-            { name: 'Email', width: '30%' },
-            { name: 'Domain', width: '25%' },
-            { name: 'Provider', width: '15%' },
-            { name: 'Flag', width: '15%' },
-            { name: 'Severity', width: '15%' },
-          ],
-          data,
-          sort: true,
-          search: true,
-          pagination: { limit: 10 },
-          style: {
-            table: { 'white-space': 'nowrap' },
-            td: { 'font-size': '0.9rem' }
+      window.addEventListener('DOMContentLoaded', () => {
+        if (!window.gridjs) {
+          alert('Grid.js library failed to load. Please check your network and reload.');
+          return;
+        }
+
+        let selectedFile = null;
+        let lastRows = [];
+        let pieChart = null;
+        let userPieChart = null;
+        let uploadedFileName = null;
+
+        // Navigation functions
+        function showPage(pageId) {
+          // Hide all pages
+          document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+          document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.classList.remove('bg-purple-800/70');
+            btn.classList.add('hover:bg-purple-700/80');
+          });
+          
+          // Show selected page
+          document.getElementById(`page-${pageId}`).classList.add('active');
+          const activeBtn = document.getElementById(`menu-${pageId}`);
+          activeBtn.classList.add('bg-purple-800/70');
+          activeBtn.classList.remove('hover:bg-purple-700/80');
+          
+          // Auto-analyze if file is available (except for upload page)
+          if (selectedFile && pageId !== 'upload') {
+            autoAnalyzePage(pageId);
           }
-        }).render(document.getElementById('table'));
-      };
-
-      const renderCharts = (summary, providerBreakdown) => {
-        const pieCtx = document.getElementById('pieChart');
-        const barCtx = document.getElementById('barChart');
-        if (pieChart) pieChart.destroy();
-        if (barChart) barChart.destroy();
-        pieChart = new Chart(pieCtx, {
-          type: 'pie',
-          data: { labels: ['Safe', 'Suspicious'], datasets: [{ data: [summary.safe, summary.suspicious], backgroundColor: ['#16a34a', '#ef4444'] }]},
-          options: { plugins: { legend: { labels: { color: '#e2e8f0' } } } }
-        });
-        const labels = providerBreakdown.map(p => p.provider);
-        const counts = providerBreakdown.map(p => p.count);
-        barChart = new Chart(barCtx, {
-          type: 'bar',
-          data: { labels, datasets: [{ label: 'Count', data: counts, backgroundColor: '#60a5fa' }] },
-          options: { scales: { x: { ticks: { color: '#e2e8f0' } }, y: { ticks: { color: '#e2e8f0' } } } }
-        });
-      };
-
-      const renderTopDomains = (list) => {
-        const ul = document.getElementById('topDomains');
-        ul.innerHTML = '';
-        list.forEach(({domain, count}) => {
-          const li = document.createElement('li');
-          li.innerHTML = `<span class="text-red-400 font-mono">${domain}</span> <span class="text-slate-400">(${count})</span>`;
-          ul.appendChild(li);
-        });
-      };
-
-      dropzone.addEventListener('click', () => fileInput.click());
-      dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-slate-400'); });
-      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('border-slate-400'));
-      dropzone.addEventListener('drop', (e) => {
-        e.preventDefault(); dropzone.classList.remove('border-slate-400');
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-          selectedFile = e.dataTransfer.files[0];
-          enableButtons(true);
-          analyzeBtn.click();
         }
-      });
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files && e.target.files[0]) {
-          selectedFile = e.target.files[0];
-          enableButtons(true);
-          analyzeBtn.click();
-        }
-      });
 
-      analyzeBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
-        const form = new FormData();
-        form.append('file', selectedFile);
-        analyzeBtn.disabled = true;
-        statusEl.textContent = 'Analyzing...';
-        let controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000);
-        try {
-          const resp = await fetch('/api/analyze', { method: 'POST', body: form, signal: controller.signal });
-          if (!resp.ok) {
-            const txt = await resp.text();
-            statusEl.textContent = 'Analysis failed';
-            alert('Analysis failed: ' + txt);
+        // Auto-analyze function for each page
+        async function autoAnalyzePage(pageId) {
+          if (!selectedFile) return;
+          
+          const form = new FormData();
+          form.append('file', selectedFile);
+          
+          try {
+            let endpoint, resultsSectionId;
+            
+            switch(pageId) {
+              case 'suspicious':
+                endpoint = '/api/analyze/suspicious-domains';
+                resultsSectionId = 'suspicious-results';
+                break;
+              case 'accesskeys':
+                endpoint = '/api/analyze/access-keys';
+                resultsSectionId = 'accesskeys-results';
+                break;
+              case 'emaildomains':
+                endpoint = '/api/analyze/email-domains-update';
+                resultsSectionId = 'emaildomains-results';
+                break;
+              case 'suspicious-users':
+                endpoint = '/api/analyze/suspicious-users';
+                resultsSectionId = 'suspicious-users-results';
+                break;
+              default:
+                return;
+            }
+            
+            console.log(`Auto-analyzing ${pageId} with endpoint: ${endpoint}`);
+            const resp = await fetch(endpoint, { method: 'POST', body: form });
+            
+            if (!resp.ok) {
+              const txt = await resp.text();
+              console.error('Analysis failed:', txt);
+              return;
+            }
+            
+            const data = await resp.json();
+            console.log('Analysis data received:', data);
+            
+            // Show results section
+            const resultsSection = document.getElementById(resultsSectionId);
+            if (resultsSection) {
+              resultsSection.style.display = 'block';
+            }
+            
+            // Process results based on page type
+            switch(pageId) {
+              case 'suspicious':
+                lastRows = data.rows || [];
+                buildSuspiciousTables(lastRows);
+                renderSuspiciousCharts(
+                  data.actor_summary || {safe:0,suspicious:0}, 
+                  data.user_summary || {safe:0,suspicious:0},
+                  data.actorProviderBreakdown || [], 
+                  data.userProviderBreakdown || []
+                );
+                renderSuspiciousTopDomains(
+                  data.topActorSuspiciousDomains || [], 
+                  data.topUserSuspiciousDomains || []
+                );
+                break;
+              case 'accesskeys':
+                renderAccessKeysResults(data);
+                break;
+              case 'emaildomains':
+                renderEmailDomainsResults(data);
+                break;
+              case 'suspicious-users':
+                renderSuspiciousUsersResults(data);
+                break;
+            }
+            
+          } catch (err) {
+            console.error('Auto-analysis error:', err);
+          }
+        }
+
+        // Setup navigation menu
+        document.getElementById('menu-upload').addEventListener('click', () => showPage('upload'));
+        document.getElementById('menu-suspicious').addEventListener('click', () => showPage('suspicious'));
+        document.getElementById('menu-domains').addEventListener('click', () => showPage('domains'));
+        document.getElementById('menu-tenants').addEventListener('click', () => showPage('tenants'));
+        document.getElementById('menu-suspicious-users').addEventListener('click', () => showPage('suspicious-users'));
+        document.getElementById('menu-usernames').addEventListener('click', () => showPage('usernames'));
+        document.getElementById('menu-accesskeys').addEventListener('click', () => showPage('accesskeys'));
+        document.getElementById('menu-emaildomains').addEventListener('click', () => showPage('emaildomains'));
+
+        // Global file upload handler
+        function setupGlobalFileUpload() {
+          // Update all dropzones to show current file status
+          function updateAllDropzones() {
+            const dropzones = [
+              { id: 'dropzone', name: 'upload' },
+              { id: 'suspicious-dropzone', name: 'suspicious' },
+              { id: 'accesskeys-dropzone', name: 'accesskeys' },
+              { id: 'emaildomains-dropzone', name: 'emaildomains' },
+              { id: 'suspicious-users-dropzone', name: 'suspicious-users' }
+            ];
+
+            dropzones.forEach(({ id, name }) => {
+              const dropzone = document.getElementById(id);
+              if (dropzone) {
+                if (selectedFile) {
+                  dropzone.innerHTML = `<p class="mb-2 text-green-400">✓ File Ready: ${uploadedFileName}</p><p class="text-sm text-slate-400">Click to change file</p>`;
+                } else {
+                  dropzone.innerHTML = `<p class="mb-2">Upload Excel file for ${name} analysis</p><p class="text-sm text-slate-400">Drag & drop or click to select</p>`;
+                }
+              }
+            });
+
+            // Enable/disable upload page analyze button only
+            const uploadAnalyzeBtn = document.getElementById('analyzeBtn');
+            if (uploadAnalyzeBtn) {
+              uploadAnalyzeBtn.disabled = !selectedFile;
+            }
+          }
+
+          // File upload handlers for each page
+          function setupFileUpload(pageId) {
+            const dropzone = document.getElementById(`${pageId}-dropzone`);
+            const fileInput = document.getElementById(`${pageId}-fileInput`);
+
+            if (!dropzone || !fileInput) {
+              console.error(`Missing elements for page: ${pageId}`);
+              return;
+            }
+
+            // Click to select file
+            dropzone.addEventListener('click', (e) => {
+              e.preventDefault();
+              fileInput.click();
+            });
+
+            // Drag and drop handlers
+            dropzone.addEventListener('dragover', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              dropzone.classList.add('border-slate-400', 'bg-slate-800/50');
+            });
+
+            dropzone.addEventListener('dragleave', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              dropzone.classList.remove('border-slate-400', 'bg-slate-800/50');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              dropzone.classList.remove('border-slate-400', 'bg-slate-800/50');
+              
+              const files = e.dataTransfer.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                    file.type === 'application/vnd.ms-excel' ||
+                    file.name.toLowerCase().endsWith('.xlsx') ||
+                    file.name.toLowerCase().endsWith('.xls')) {
+                  selectedFile = file;
+                  uploadedFileName = file.name;
+                  updateAllDropzones();
+                  
+                  // Auto-analyze current page if not upload page
+                  const currentPage = document.querySelector('.page.active');
+                  if (currentPage && currentPage.id !== 'page-upload') {
+                    const pageId = currentPage.id.replace('page-', '');
+                    autoAnalyzePage(pageId);
+                  }
+                } else {
+                  alert('Please select an Excel file (.xlsx or .xls)');
+                }
+              }
+            });
+
+            // File input change handler
+            fileInput.addEventListener('change', (e) => {
+              const files = e.target.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+                selectedFile = file;
+                uploadedFileName = file.name;
+                updateAllDropzones();
+              }
+            });
+          }
+
+          // Setup file uploads for all pages
+          setupFileUpload('suspicious');
+          setupFileUpload('accesskeys');
+          setupFileUpload('emaildomains');
+          setupFileUpload('suspicious-users');
+
+          // Special setup for upload page (different structure)
+          const uploadDropzone = document.getElementById('dropzone');
+          const uploadFileInput = document.getElementById('fileInput');
+
+          if (uploadDropzone && uploadFileInput) {
+            uploadDropzone.addEventListener('click', (e) => {
+              e.preventDefault();
+              uploadFileInput.click();
+            });
+
+            uploadDropzone.addEventListener('dragover', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              uploadDropzone.classList.add('border-slate-400', 'bg-slate-800/50');
+            });
+
+            uploadDropzone.addEventListener('dragleave', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              uploadDropzone.classList.remove('border-slate-400', 'bg-slate-800/50');
+            });
+
+            uploadDropzone.addEventListener('drop', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              uploadDropzone.classList.remove('border-slate-400', 'bg-slate-800/50');
+              
+              const files = e.dataTransfer.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                    file.type === 'application/vnd.ms-excel' ||
+                    file.name.toLowerCase().endsWith('.xlsx') ||
+                    file.name.toLowerCase().endsWith('.xls')) {
+                  selectedFile = file;
+                  uploadedFileName = file.name;
+                  updateAllDropzones();
+                  
+                  // Auto-analyze current page if not upload page
+                  const currentPage = document.querySelector('.page.active');
+                  if (currentPage && currentPage.id !== 'page-upload') {
+                    const pageId = currentPage.id.replace('page-', '');
+                    autoAnalyzePage(pageId);
+                  }
+                } else {
+                  alert('Please select an Excel file (.xlsx or .xls)');
+                }
+              }
+            });
+
+            uploadFileInput.addEventListener('change', (e) => {
+              const files = e.target.files;
+              if (files && files.length > 0) {
+                const file = files[0];
+                selectedFile = file;
+                uploadedFileName = file.name;
+                updateAllDropzones();
+              }
+            });
+          }
+
+          // Initial update
+          updateAllDropzones();
+        }
+
+        // Setup global file upload system
+        setupGlobalFileUpload();
+
+        // Analysis functions
+        async function runAnalysis(endpoint, resultsSectionId, analyzeBtnId) {
+          if (!selectedFile) {
+            alert('Please select a file first');
             return;
           }
-          const data = await resp.json();
-          lastRows = data.rows || [];
-          enableButtons(true);
-          document.getElementById('table').innerHTML = '';
-          buildTable(lastRows);
-          renderTopDomains(data.topSuspiciousDomains || []);
-          renderCharts(data.summary || {safe:0,suspicious:0}, data.providerBreakdown || []);
-          statusEl.textContent = 'Done.';
-        } catch (err) {
-          if (err.name === 'AbortError') {
-            statusEl.textContent = 'Timed out after 30s.';
-            alert('Request timed out. Check server logs.');
-          } else {
-            statusEl.textContent = 'Analysis error';
-            alert('Analysis error: ' + err);
+          
+          const form = new FormData();
+          form.append('file', selectedFile);
+          
+          const analyzeBtn = document.getElementById(analyzeBtnId);
+          if (!analyzeBtn) {
+            console.error(`Analyze button not found: ${analyzeBtnId}`);
+            return;
           }
-        } finally {
-          clearTimeout(timeout);
-          analyzeBtn.disabled = false;
+          
+          analyzeBtn.disabled = true;
+          analyzeBtn.textContent = 'Analyzing...';
+          
+          try {
+            console.log(`Sending request to: ${endpoint}`);
+            const resp = await fetch(endpoint, { method: 'POST', body: form });
+            console.log(`Response status: ${resp.status}`);
+            
+            if (!resp.ok) {
+              const txt = await resp.text();
+              console.error('Response error:', txt);
+              alert('Analysis failed: ' + txt);
+              return;
+            }
+            
+            const data = await resp.json();
+            console.log('Analysis data received:', data);
+            
+            // Show results section
+            const resultsSection = document.getElementById(resultsSectionId);
+            if (resultsSection) {
+              resultsSection.style.display = 'block';
+            }
+            
+            return data;
+          } catch (err) {
+            console.error('Analysis error:', err);
+            alert('Analysis error: ' + err);
+          } finally {
+            analyzeBtn.disabled = false;
+            // Restore original button text based on button ID
+            if (analyzeBtnId === 'suspicious-analyzeBtn') {
+              analyzeBtn.textContent = 'Analyze Suspicious Domains';
+            } else if (analyzeBtnId === 'accesskeys-analyzeBtn') {
+              analyzeBtn.textContent = 'Analyze Access Keys';
+            } else if (analyzeBtnId === 'emaildomains-analyzeBtn') {
+              analyzeBtn.textContent = 'Analyze Email Domains';
+            }
+          }
         }
-      });
 
-      const downloadBlob = (blob, filename) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      };
+        // Upload page analysis (general)
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+          if (!selectedFile) {
+            alert('Please select a file first');
+            return;
+          }
+          
+          const form = new FormData();
+          form.append('file', selectedFile);
+          const analyzeBtn = document.getElementById('analyzeBtn');
+          analyzeBtn.disabled = true;
+          analyzeBtn.textContent = 'Analyzing...';
+          
+          try {
+            const resp = await fetch('/api/analyze', { method: 'POST', body: form });
+            if (!resp.ok) {
+              const txt = await resp.text();
+              alert('Analysis failed: ' + txt);
+              return;
+            }
+            const data = await resp.json();
+            lastRows = data.rows || [];
+            alert(`Analysis complete! Found ${data.summary?.suspicious || 0} suspicious activities out of ${data.summary?.total || 0} total.`);
+          } catch (err) {
+            alert('Analysis error: ' + err);
+          } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = 'Analyze All';
+          }
+        });
 
-      exportCsvBtn.addEventListener('click', async () => {
-        if (!lastRows.length) return;
-        const resp = await fetch('/api/export/csv', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows: lastRows }) });
-        const blob = await resp.blob();
-        downloadBlob(blob, 'analysis.csv');
-      });
+        // Note: Analyze buttons removed - analysis happens automatically when navigating to pages
 
-      exportXlsxBtn.addEventListener('click', async () => {
-        if (!lastRows.length) return;
-        const resp = await fetch('/api/export/excel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows: lastRows }) });
-        const blob = await resp.blob();
-        downloadBlob(blob, 'analysis.xlsx');
-      });
+        // Table building functions
+        function buildSuspiciousTables(rows) {
+          console.log('Building suspicious tables with rows:', rows.length);
+          
+          // Actor domain analysis
+          const actorSuspiciousRows = rows.filter(r => r.actor_suspicious === true);
+          const actorSafeRows = rows.filter(r => r.actor_suspicious === false);
+          
+          // User domain analysis
+          const userSuspiciousRows = rows.filter(r => r.user_suspicious === true);
+          const userSafeRows = rows.filter(r => r.user_suspicious === false);
+          
+          console.log('Actor suspicious rows:', actorSuspiciousRows.length, 'Actor safe rows:', actorSafeRows.length);
+          console.log('User suspicious rows:', userSuspiciousRows.length, 'User safe rows:', userSafeRows.length);
+          
+          // Actor domain data
+          const actorSuspiciousData = actorSuspiciousRows.map(r => [
+            r.DATE || '', r.ACTOR_USER_EMAIL || '', r.actor_email_domain || '', r.TENANT_NAME || '', r.USER_NAME || '',
+            r.USER_EMAIL || '', r.ACTIVITY || '', r.actor_flag || 'suspicious'
+          ]);
+          
+          const actorSafeData = actorSafeRows.map(r => [
+            r.DATE || '', r.ACTOR_USER_EMAIL || '', r.actor_email_domain || '', r.TENANT_NAME || '', r.USER_NAME || '',
+            r.USER_EMAIL || '', r.ACTIVITY || '', r.actor_flag || 'safe'
+          ]);
+          
+          // User domain data - Domain column moved next to User Email
+          const userSuspiciousData = userSuspiciousRows.map(r => [
+            r.DATE || '', r.ACTOR_USER_EMAIL || '', r.TENANT_NAME || '', r.USER_NAME || '',
+            r.USER_EMAIL || '', r.user_email_domain || '', r.ACTIVITY || '', r.user_flag || 'suspicious'
+          ]);
+          
+          const userSafeData = userSafeRows.map(r => [
+            r.DATE || '', r.ACTOR_USER_EMAIL || '', r.TENANT_NAME || '', r.USER_NAME || '',
+            r.USER_EMAIL || '', r.user_email_domain || '', r.ACTIVITY || '', r.user_flag || 'safe'
+          ]);
+          
+          // Actor domain table configuration (Domain after Actor Email)
+          const actorTableConfig = {
+            columns: [
+              { name: 'Date', width: '15%' }, { name: 'Actor Email', width: '20%' },
+              { name: 'Actor Domain', width: '12%' }, { name: 'Tenant', width: '15%' }, { name: 'User Name', width: '15%' },
+              { name: 'User Email', width: '20%' }, { name: 'Activity', width: '15%' },
+              { name: 'Flag', width: '8%' }
+            ],
+            sort: true, search: true, pagination: { limit: 10 },
+            style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+          };
+          
+          // User domain table configuration (Domain after User Email)
+          const userTableConfig = {
+            columns: [
+              { name: 'Date', width: '15%' }, { name: 'Actor Email', width: '20%' },
+              { name: 'Tenant', width: '15%' }, { name: 'User Name', width: '15%' },
+              { name: 'User Email', width: '20%' }, { name: 'User Domain', width: '12%' }, { name: 'Activity', width: '15%' },
+              { name: 'Flag', width: '8%' }
+            ],
+            sort: true, search: true, pagination: { limit: 10 },
+            style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+          };
+          
+          // Clear existing tables
+          document.getElementById('suspicious-suspiciousTable').innerHTML = '';
+          document.getElementById('suspicious-safeTable').innerHTML = '';
+          document.getElementById('suspicious-userSuspiciousTable').innerHTML = '';
+          document.getElementById('suspicious-userSafeTable').innerHTML = '';
+          
+          // Render Actor Domain - Suspicious Activities
+          if (actorSuspiciousData.length > 0) {
+            console.log('Rendering actor suspicious table with', actorSuspiciousData.length, 'rows');
+            new gridjs.Grid({ ...actorTableConfig, data: actorSuspiciousData }).render(document.getElementById('suspicious-suspiciousTable'));
+          } else {
+            document.getElementById('suspicious-suspiciousTable').innerHTML = '<p class="text-slate-400 text-center py-4">No suspicious activities found</p>';
+          }
+          
+          // Render Actor Domain - Safe Activities
+          if (actorSafeData.length > 0) {
+            console.log('Rendering actor safe table with', actorSafeData.length, 'rows');
+            new gridjs.Grid({ ...actorTableConfig, data: actorSafeData }).render(document.getElementById('suspicious-safeTable'));
+          } else {
+            document.getElementById('suspicious-safeTable').innerHTML = '<p class="text-slate-400 text-center py-4">No safe activities found</p>';
+          }
+          
+          // Render User Domain - Suspicious Activities
+          if (userSuspiciousData.length > 0) {
+            console.log('Rendering user suspicious table with', userSuspiciousData.length, 'rows');
+            new gridjs.Grid({ ...userTableConfig, data: userSuspiciousData }).render(document.getElementById('suspicious-userSuspiciousTable'));
+          } else {
+            document.getElementById('suspicious-userSuspiciousTable').innerHTML = '<p class="text-slate-400 text-center py-4">No suspicious activities found</p>';
+          }
+          
+          // Render User Domain - Safe Activities
+          if (userSafeData.length > 0) {
+            console.log('Rendering user safe table with', userSafeData.length, 'rows');
+            new gridjs.Grid({ ...userTableConfig, data: userSafeData }).render(document.getElementById('suspicious-userSafeTable'));
+          } else {
+            document.getElementById('suspicious-userSafeTable').innerHTML = '<p class="text-slate-400 text-center py-4">No safe activities found</p>';
+          }
+        }
+
+        function renderAccessKeysResults(data) {
+          // Summary statistics
+          document.getElementById('accesskeys-total-tenants').textContent = data.summary.total_tenants || 0;
+          document.getElementById('accesskeys-suspicious-count').textContent = data.summary.flagged_tenants || 0;
+          document.getElementById('accesskeys-exception-count').textContent = data.summary.exception_tenants || 0;
+          document.getElementById('accesskeys-non-exception-count').textContent = data.summary.non_exception_tenants || 0;
+          
+          // Flagged tenants (top section)
+          const flaggedHtml = data.flagged_tenants.map(t => 
+            `<div class="flex justify-between items-center p-2 bg-red-900/20 rounded mb-2">
+              <span class="text-red-400 font-medium">${t.tenant_name}</span>
+              <span class="text-red-300">${t.access_key_count} access keys</span>
+            </div>`
+          ).join('');
+          document.getElementById('accesskeys-flagged-tenants').innerHTML = 
+            flaggedHtml || '<p class="text-green-400">✅ No suspicious tenants found</p>';
+          
+          // Suspicious activities table
+          const suspiciousData = data.suspicious_activities.map(r => [
+            r.DATE || '', r.ACTOR_USERNAME || '', r.ACTOR_USER_EMAIL || '', r.TENANT_NAME || ''
+          ]);
+          
+          // Clear existing tables
+          document.getElementById('accesskeys-suspicious-table').innerHTML = '';
+          document.getElementById('accesskeys-all-table').innerHTML = '';
+          
+          if (suspiciousData.length > 0) {
+            new gridjs.Grid({
+              columns: [
+                { name: 'Date', width: '25%' }, { name: 'Actor Username', width: '25%' },
+                { name: 'Actor Email', width: '25%' }, { name: 'Tenant Name', width: '25%' }
+              ],
+              data: suspiciousData, sort: true, search: true, pagination: { limit: 10 },
+              style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+            }).render(document.getElementById('accesskeys-suspicious-table'));
+          } else {
+            document.getElementById('accesskeys-suspicious-table').innerHTML = 
+              '<p class="text-green-400 text-center py-4">✅ No suspicious activities found</p>';
+          }
+          
+          // All activities table
+          const allData = data.all_activities.map(r => [
+            r.DATE || '', r.ACTOR_USERNAME || '', r.ACTOR_USER_EMAIL || '', r.TENANT_NAME || ''
+          ]);
+          
+          new gridjs.Grid({
+            columns: [
+              { name: 'Date', width: '25%' }, { name: 'Actor Username', width: '25%' },
+              { name: 'Actor Email', width: '25%' }, { name: 'Tenant Name', width: '25%' }
+            ],
+            data: allData, sort: true, search: true, pagination: { limit: 10 },
+            style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+          }).render(document.getElementById('accesskeys-all-table'));
+        }
+
+        function renderEmailDomainsResults(data) {
+          // Summary statistics
+          document.getElementById('emaildomains-total-updates').textContent = data.summary.total_updates || 0;
+          document.getElementById('emaildomains-suspicious-count').textContent = data.summary.suspicious_matches || 0;
+          document.getElementById('emaildomains-safe-count').textContent = data.summary.safe_matches || 0;
+          document.getElementById('emaildomains-unique-domains').textContent = data.summary.unique_domains || 0;
+          
+          // Suspicious domain matches (top section)
+          const suspiciousHtml = data.suspicious_activities.map(activity => 
+            `<div class="flex justify-between items-center p-2 bg-red-900/20 rounded mb-2">
+              <span class="text-red-400 font-medium">${activity.TENANT_NAME}</span>
+              <span class="text-red-300">Suspicious: ${activity.SUSPICIOUS_DOMAINS}</span>
+            </div>`
+          ).join('');
+          document.getElementById('emaildomains-suspicious-matches').innerHTML = 
+            suspiciousHtml || '<p class="text-green-400">✅ No suspicious domain matches found</p>';
+          
+          // Suspicious activities table
+          const suspiciousData = data.suspicious_activities.map(r => [
+            r.DATE || '', r.ACTOR_USERNAME || '', r.ACTOR_EMAIL || '', r.TENANT_NAME || '', r.SUSPICIOUS_DOMAINS || ''
+          ]);
+          
+          // Clear existing tables
+          document.getElementById('emaildomains-suspicious-table').innerHTML = '';
+          document.getElementById('emaildomains-all-table').innerHTML = '';
+          
+          if (suspiciousData.length > 0) {
+            new gridjs.Grid({
+              columns: [
+                { name: 'Date', width: '20%' }, { name: 'Actor Username', width: '20%' },
+                { name: 'Actor Email', width: '20%' }, { name: 'Tenant Name', width: '20%' },
+                { name: 'Suspicious Domains', width: '20%' }
+              ],
+              data: suspiciousData, sort: true, search: true, pagination: { limit: 10 },
+              style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+            }).render(document.getElementById('emaildomains-suspicious-table'));
+          } else {
+            document.getElementById('emaildomains-suspicious-table').innerHTML = 
+              '<p class="text-green-400 text-center py-4">✅ No suspicious activities found</p>';
+          }
+          
+          // Safe activities table (filter out suspicious activities)
+          const safeActivities = data.all_activities.filter(r => !r.IS_SUSPICIOUS);
+          const safeData = safeActivities.map(r => [
+            r.DATE || '', r.ACTOR_USERNAME || '', r.ACTOR_EMAIL || '', r.TENANT_NAME || '', r.DOMAINS_EXTRACTED || ''
+          ]);
+          
+          if (safeData.length > 0) {
+            new gridjs.Grid({
+              columns: [
+                { name: 'Date', width: '20%' }, { name: 'Actor Username', width: '20%' },
+                { name: 'Actor Email', width: '20%' }, { name: 'Tenant Name', width: '20%' },
+                { name: 'Safe Domains', width: '20%' }
+              ],
+              data: safeData, sort: true, search: true, pagination: { limit: 10 },
+              style: { table: { 'white-space': 'nowrap' }, td: { 'font-size': '0.9rem' } }
+            }).render(document.getElementById('emaildomains-all-table'));
+          } else {
+            document.getElementById('emaildomains-all-table').innerHTML = 
+              '<p class="text-blue-400 text-center py-4">📋 No safe activities found</p>';
+          }
+        }
+
+        function renderSuspiciousCharts(actorSummary, userSummary, actorProviderBreakdown, userProviderBreakdown) {
+          const pieCtx = document.getElementById('suspicious-pieChart');
+          const userPieCtx = document.getElementById('suspicious-userPieChart');
+          if (pieChart) pieChart.destroy();
+          if (userPieChart) userPieChart.destroy();
+          
+          // Actor Domain pie chart
+          pieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: { labels: ['Safe', 'Suspicious'], datasets: [{ data: [actorSummary.safe, actorSummary.suspicious], backgroundColor: ['#16a34a', '#ef4444'] }]},
+            options: { plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+          });
+          
+          // User Domain pie chart
+          userPieChart = new Chart(userPieCtx, {
+            type: 'pie',
+            data: { labels: ['Safe', 'Suspicious'], datasets: [{ data: [userSummary.safe, userSummary.suspicious], backgroundColor: ['#16a34a', '#ef4444'] }]},
+            options: { plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+          });
+          
+          // Render both provider breakdown tables
+          renderProviderBreakdownTable(actorProviderBreakdown, 'suspicious-providerTable');
+          renderProviderBreakdownTable(userProviderBreakdown, 'suspicious-userProviderTable');
+        }
+
+        function renderProviderBreakdownTable(providerBreakdown, tableId = 'suspicious-providerTable') {
+          const tableContainer = document.getElementById(tableId);
+          
+          if (!providerBreakdown || providerBreakdown.length === 0) {
+            tableContainer.innerHTML = '<p class="text-slate-400 text-center py-4">No provider data available</p>';
+            return;
+          }
+          
+          // Sort providers by count (descending)
+          const sortedProviders = providerBreakdown.sort((a, b) => b.count - a.count);
+          
+          const tableData = sortedProviders.map(p => [p.provider, p.count]);
+          
+          // Clear existing table
+          tableContainer.innerHTML = '';
+          
+          new gridjs.Grid({
+            columns: [
+              { name: 'Provider', width: '35%' },
+              { name: 'Count', width: '15%' }
+            ],
+            data: tableData,
+            sort: true,
+            search: false,
+            pagination: false,
+            style: { 
+              table: { 'white-space': 'nowrap', 'width': 'auto' }, 
+              td: { 'font-size': '0.9rem', 'padding': '8px 12px' },
+              th: { 'background-color': '#1e293b', 'color': '#e2e8f0', 'padding': '8px 12px' }
+            }
+          }).render(tableContainer);
+        }
+
+        function renderSuspiciousTopDomains(actorTopDomains, userTopDomains) {
+          const ul = document.getElementById('suspicious-topDomains');
+          ul.innerHTML = '';
+          
+          // Combine actor and user domains for display
+          const allDomains = [...actorTopDomains, ...userTopDomains];
+          
+          // Remove duplicates and sort by count
+          const uniqueDomains = {};
+          allDomains.forEach(({domain, count}) => {
+            if (uniqueDomains[domain]) {
+              uniqueDomains[domain] += count;
+            } else {
+              uniqueDomains[domain] = count;
+            }
+          });
+          
+          const sortedDomains = Object.entries(uniqueDomains)
+            .map(([domain, count]) => ({domain, count}))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+          
+          sortedDomains.forEach(({domain, count}) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span class="text-red-400 font-mono">${domain}</span> <span class="text-slate-400">(${count})</span>`;
+            ul.appendChild(li);
+          });
+        }
+
+        // Export functions (for upload page)
+        const downloadBlob = (blob, filename) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
+
+        document.getElementById('exportCsvBtn').addEventListener('click', async () => {
+          if (!lastRows.length) return;
+          const resp = await fetch('/api/export/csv', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows: lastRows }) });
+          const blob = await resp.blob();
+          downloadBlob(blob, 'analysis.csv');
+        });
+
+        document.getElementById('exportXlsxBtn').addEventListener('click', async () => {
+          if (!lastRows.length) return;
+          const resp = await fetch('/api/export/excel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rows: lastRows }) });
+          const blob = await resp.blob();
+          downloadBlob(blob, 'analysis.xlsx');
+        });
+
+        // Suspicious Domains Management
+        let domainsList = [];
+        
+        async function loadDomains() {
+          try {
+            const resp = await fetch('/api/domains');
+            if (resp.ok) {
+              domainsList = await resp.json();
+              renderDomainsList();
+            } else {
+              console.error('Failed to load domains');
+            }
+          } catch (err) {
+            console.error('Error loading domains:', err);
+          }
+        }
+        
+        function renderDomainsList() {
+          const container = document.getElementById('domains-list');
+          container.innerHTML = '';
+          
+          if (domainsList.length === 0) {
+            container.innerHTML = '<p class="text-slate-400 text-center py-4">No domains found</p>';
+            return;
+          }
+          
+          domainsList.forEach((domain, index) => {
+            const domainDiv = document.createElement('div');
+            domainDiv.className = 'flex items-center justify-between p-3 bg-slate-800/50 rounded border border-slate-700';
+            domainDiv.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="text-orange-400 font-mono text-sm">${domain}</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="edit-domain-btn px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Edit
+                </button>
+                <button class="remove-domain-btn px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Remove
+                </button>
+              </div>
+            `;
+            container.appendChild(domainDiv);
+          });
+          
+          // Add event listeners
+          container.querySelectorAll('.edit-domain-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              editDomain(index);
+            });
+          });
+          
+          container.querySelectorAll('.remove-domain-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              removeDomain(index);
+            });
+          });
+        }
+        
+        function editDomain(index) {
+          const currentDomain = domainsList[index];
+          const newDomain = prompt('Edit domain:', currentDomain);
+          if (newDomain && newDomain.trim() && newDomain !== currentDomain) {
+            domainsList[index] = newDomain.trim().toLowerCase();
+            renderDomainsList();
+          }
+        }
+        
+        function removeDomain(index) {
+          if (confirm(`Are you sure you want to remove "${domainsList[index]}"?`)) {
+            domainsList.splice(index, 1);
+            renderDomainsList();
+          }
+        }
+        
+        async function addDomain() {
+          const input = document.getElementById('new-domain-input');
+          const domain = input.value.trim().toLowerCase();
+          
+          if (!domain) {
+            alert('Please enter a domain');
+            return;
+          }
+          
+          // Basic domain validation
+          if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/.test(domain)) {
+            alert('Please enter a valid domain (e.g., example.com)');
+            return;
+          }
+          
+          if (domainsList.includes(domain)) {
+            alert('This domain already exists');
+            return;
+          }
+          
+          domainsList.push(domain);
+          input.value = '';
+          renderDomainsList();
+        }
+        
+        async function saveDomains() {
+          try {
+            const resp = await fetch('/api/domains', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ domains: domainsList })
+            });
+            
+            if (resp.ok) {
+              alert('Domains saved successfully!');
+            } else {
+              alert('Failed to save domains');
+            }
+          } catch (err) {
+            console.error('Error saving domains:', err);
+            alert('Error saving domains');
+          }
+        }
+        
+        // Event listeners for domains management
+        document.getElementById('add-domain-btn').addEventListener('click', addDomain);
+        document.getElementById('new-domain-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addDomain();
+        });
+        document.getElementById('save-domains-btn').addEventListener('click', saveDomains);
+        document.getElementById('reload-domains-btn').addEventListener('click', loadDomains);
+        
+        // Tenant Exceptions Management
+        let tenantsList = [];
+        
+        async function loadTenants() {
+          try {
+            const resp = await fetch('/api/tenants');
+            if (resp.ok) {
+              tenantsList = await resp.json();
+              renderTenantsList();
+            } else {
+              console.error('Failed to load tenants');
+            }
+          } catch (err) {
+            console.error('Error loading tenants:', err);
+          }
+        }
+        
+        function renderTenantsList() {
+          const container = document.getElementById('tenants-list');
+          container.innerHTML = '';
+          
+          if (tenantsList.length === 0) {
+            container.innerHTML = '<p class="text-slate-400 text-center py-4">No tenant exceptions found</p>';
+            return;
+          }
+          
+          tenantsList.forEach((tenant, index) => {
+            const tenantDiv = document.createElement('div');
+            tenantDiv.className = 'flex items-center justify-between p-3 bg-slate-800/50 rounded border border-slate-700';
+            tenantDiv.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="text-blue-400 font-mono text-sm">${tenant}</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="edit-tenant-btn px-2 py-1 bg-blue-600 hover:bg-blue-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Edit
+                </button>
+                <button class="remove-tenant-btn px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Remove
+                </button>
+              </div>
+            `;
+            container.appendChild(tenantDiv);
+          });
+          
+          // Add event listeners
+          container.querySelectorAll('.edit-tenant-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              editTenant(index);
+            });
+          });
+          
+          container.querySelectorAll('.remove-tenant-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              removeTenant(index);
+            });
+          });
+        }
+        
+        function editTenant(index) {
+          const currentTenant = tenantsList[index];
+          const newTenant = prompt('Edit tenant name:', currentTenant);
+          if (newTenant && newTenant.trim() && newTenant !== currentTenant) {
+            tenantsList[index] = newTenant.trim();
+            renderTenantsList();
+          }
+        }
+        
+        function removeTenant(index) {
+          if (confirm(`Are you sure you want to remove "${tenantsList[index]}"?`)) {
+            tenantsList.splice(index, 1);
+            renderTenantsList();
+          }
+        }
+        
+        async function addTenant() {
+          const input = document.getElementById('new-tenant-input');
+          const tenant = input.value.trim();
+          
+          if (!tenant) {
+            alert('Please enter a tenant name');
+            return;
+          }
+          
+          if (tenantsList.includes(tenant)) {
+            alert('This tenant already exists');
+            return;
+          }
+          
+          tenantsList.push(tenant);
+          input.value = '';
+          renderTenantsList();
+        }
+        
+        async function saveTenants() {
+          try {
+            const resp = await fetch('/api/tenants', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tenants: tenantsList })
+            });
+            
+            if (resp.ok) {
+              alert('Tenant exceptions saved successfully!');
+            } else {
+              alert('Failed to save tenant exceptions');
+            }
+          } catch (err) {
+            console.error('Error saving tenants:', err);
+            alert('Error saving tenant exceptions');
+          }
+        }
+        
+        // Event listeners for tenant exceptions management
+        document.getElementById('add-tenant-btn').addEventListener('click', addTenant);
+        document.getElementById('new-tenant-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addTenant();
+        });
+        document.getElementById('save-tenants-btn').addEventListener('click', saveTenants);
+        document.getElementById('reload-tenants-btn').addEventListener('click', loadTenants);
+        
+        // Load domains when domains page is shown, tenants when tenants page is shown
+        const originalShowPage = showPage;
+        showPage = function(pageId) {
+          originalShowPage(pageId);
+          if (pageId === 'domains') {
+            loadDomains();
+          } else if (pageId === 'tenants') {
+            loadTenants();
+          } else if (pageId === 'usernames') {
+            loadUsernames();
+          }
+        };
+        
+        // Suspicious Usernames Management
+        let usernamesList = [];
+        
+        async function loadUsernames() {
+          try {
+            const resp = await fetch('/api/usernames');
+            if (resp.ok) {
+              usernamesList = await resp.json();
+              renderUsernamesList();
+            } else {
+              console.error('Failed to load usernames');
+            }
+          } catch (err) {
+            console.error('Error loading usernames:', err);
+          }
+        }
+        
+        function renderUsernamesList() {
+          const container = document.getElementById('usernames-list');
+          container.innerHTML = '';
+          
+          if (usernamesList.length === 0) {
+            container.innerHTML = '<p class="text-slate-400 text-center py-4">No suspicious usernames found</p>';
+            return;
+          }
+          
+          usernamesList.forEach((username, index) => {
+            const usernameDiv = document.createElement('div');
+            usernameDiv.className = 'flex items-center justify-between p-3 bg-slate-800/50 rounded border border-slate-700';
+            usernameDiv.innerHTML = `
+              <div class="flex items-center gap-3">
+                <span class="text-orange-400 font-mono text-sm">${username}</span>
+              </div>
+              <div class="flex gap-2">
+                <button class="edit-username-btn px-2 py-1 bg-orange-600 hover:bg-orange-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Edit
+                </button>
+                <button class="remove-username-btn px-2 py-1 bg-red-600 hover:bg-red-500 rounded text-xs text-white transition-colors" data-index="${index}">
+                  Remove
+                </button>
+              </div>
+            `;
+            container.appendChild(usernameDiv);
+          });
+          
+          // Add event listeners
+          container.querySelectorAll('.edit-username-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              editUsername(index);
+            });
+          });
+          
+          container.querySelectorAll('.remove-username-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              const index = parseInt(e.target.dataset.index);
+              removeUsername(index);
+            });
+          });
+        }
+        
+        function editUsername(index) {
+          const currentUsername = usernamesList[index];
+          const newUsername = prompt('Edit suspicious username:', currentUsername);
+          if (newUsername && newUsername.trim() && newUsername !== currentUsername) {
+            usernamesList[index] = newUsername.trim();
+            renderUsernamesList();
+          }
+        }
+        
+        function removeUsername(index) {
+          if (confirm(`Are you sure you want to remove "${usernamesList[index]}"?`)) {
+            usernamesList.splice(index, 1);
+            renderUsernamesList();
+          }
+        }
+        
+        async function addUsername() {
+          const input = document.getElementById('new-username-input');
+          const username = input.value.trim();
+          
+          if (!username) {
+            alert('Please enter a suspicious username');
+            return;
+          }
+          
+          if (usernamesList.includes(username)) {
+            alert('This username already exists');
+            return;
+          }
+          
+          usernamesList.push(username);
+          input.value = '';
+          renderUsernamesList();
+        }
+        
+        async function saveUsernames() {
+          try {
+            const resp = await fetch('/api/usernames', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usernames: usernamesList })
+            });
+            
+            if (resp.ok) {
+              alert('Suspicious usernames saved successfully!');
+            } else {
+              alert('Failed to save suspicious usernames');
+            }
+          } catch (err) {
+            console.error('Error saving usernames:', err);
+            alert('Error saving suspicious usernames');
+          }
+        }
+        
+        // Event listeners for suspicious usernames management
+        document.getElementById('add-username-btn').addEventListener('click', addUsername);
+        document.getElementById('new-username-input').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') addUsername();
+        });
+        document.getElementById('save-usernames-btn').addEventListener('click', saveUsernames);
+        document.getElementById('reload-usernames-btn').addEventListener('click', loadUsernames);
+        
+        // Function to render suspicious usernames results
+        function renderSuspiciousUsersResults(data) {
+          // Summary statistics
+          document.getElementById('suspicious-users-total').textContent = data.summary.total || 0;
+          document.getElementById('suspicious-users-suspicious').textContent = data.summary.suspicious || 0;
+          document.getElementById('suspicious-users-safe').textContent = data.summary.safe || 0;
+          
+          // Render suspicious usernames table
+          renderSuspiciousUsernamesTable(data.suspiciousUsernamesFound || []);
+          
+          // Render top suspicious usernames
+          renderTopSuspiciousUsernames(data.topSuspiciousUsernames || []);
+        }
+        
+        function renderSuspiciousUsernamesTable(suspiciousData) {
+          const container = document.getElementById('suspicious-usernames-table');
+          
+          if (!suspiciousData || suspiciousData.length === 0) {
+            container.innerHTML = '<p class="text-slate-400 text-center py-4">No suspicious usernames found</p>';
+            return;
+          }
+          
+          const suspiciousTableConfig = {
+            columns: [
+              { name: 'Date', id: 'DATE', width: '15%' },
+              { name: 'Actor Email', id: 'ACTOR_USER_EMAIL', width: '20%' },
+              { name: 'Actor Domain', id: 'actor_email_domain', width: '15%' },
+              { name: 'Tenant', id: 'TENANT_NAME', width: '15%' },
+              { name: 'User Name', id: 'USER_NAME', width: '15%' },
+              { name: 'User Email', id: 'USER_EMAIL', width: '20%' }
+            ],
+            data: suspiciousData,
+            width: '100%',
+            style: {
+              table: {
+                'border': '1px solid #475569'
+              },
+              th: {
+                'background-color': '#1e293b',
+                'color': '#f1f5f9',
+                'border': '1px solid #475569',
+                'padding': '8px'
+              },
+              td: {
+                'border': '1px solid #475569',
+                'padding': '8px',
+                'color': '#e2e8f0',
+                'background-color': '#1e293b'
+              }
+            }
+          };
+          
+          new gridjs.Grid(suspiciousTableConfig).render(container);
+        }
+        
+        function renderTopSuspiciousUsernames(topUsernames) {
+          const container = document.getElementById('suspicious-users-topUsernames');
+          
+          if (!topUsernames || topUsernames.length === 0) {
+            container.innerHTML = '<p class="text-slate-400 text-center py-4">No suspicious usernames found</p>';
+            return;
+          }
+          
+          container.innerHTML = '';
+          topUsernames.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-2 bg-slate-800/50 rounded';
+            div.innerHTML = `
+              <span class="text-orange-400 font-mono">${item.usernames}</span>
+              <span class="text-red-400 font-bold">${item.count}</span>
+            `;
+            container.appendChild(div);
+          });
+        }
+        
       });
     </script>
   </body>
-  </html>
-
-
+</html>

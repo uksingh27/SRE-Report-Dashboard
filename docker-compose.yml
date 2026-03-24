@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  sre-report-analyzer:
+    image: sre-report-analyzer:latest
+    container_name: sre-report-analyzer
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./suspicious_domains.csv:/app/suspicious_domains.csv
+      - ./tenant_exceptions.csv:/app/tenant_exceptions.csv
+      - ./suspicious_usernames.csv:/app/suspicious_usernames.csv
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
