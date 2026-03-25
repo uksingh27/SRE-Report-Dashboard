@@ -11,9 +11,11 @@ services:
       - ./suspicious_domains.csv:/app/suspicious_domains.csv
       - ./tenant_exceptions.csv:/app/tenant_exceptions.csv
       - ./suspicious_usernames.csv:/app/suspicious_usernames.csv
+      - "/mnt/c/Users/upendras/OneDrive - NICE Ltd/SRE_real_Reports/Regions:/app/regions"
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
+      - REGIONS_BASE_PATH=/app/regions
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')"]

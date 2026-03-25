@@ -7,7 +7,8 @@ import uuid
 import pandas as pd
 import json
 from main_processor import get_combined_analysis
-from config import UPLOAD_FOLDER, SUSPICIOUS_DOMAINS_FILE, TENANT_EXCEPTION_FILE, SUSPICIOUS_USERNAMES_FILE
+from config import UPLOAD_FOLDER, SUSPICIOUS_DOMAINS_FILE, TENANT_EXCEPTION_FILE, SUSPICIOUS_USERNAMES_FILE, REGIONS_BASE_PATH
+from processors.region_processor import process_all_regions, get_regions_info
 
 
 class SafeJSONEncoder(json.JSONEncoder):
@@ -368,6 +369,30 @@ def save_usernames():
         return jsonify({"error": "Failed to save usernames"}), 500
 
 
+
+
+@app.route("/api/regions", methods=["GET"])
+def api_get_regions():
+    """Return the list of regions with file counts (no processing)."""
+    try:
+        info = get_regions_info(REGIONS_BASE_PATH)
+        return jsonify(info)
+    except Exception as exc:
+        app.logger.exception("/api/regions: failed")
+        return jsonify({"error": str(exc)}), 500
+
+
+@app.route("/api/analyze/regions", methods=["POST"])
+def api_analyze_regions():
+    """Process all region folders and return aggregated analysis per region."""
+    app.logger.info("/api/analyze/regions: starting bulk region processing")
+    try:
+        results = process_all_regions(REGIONS_BASE_PATH)
+        app.logger.info("/api/analyze/regions: done")
+        return jsonify(results)
+    except Exception as exc:
+        app.logger.exception("/api/analyze/regions: failed")
+        return jsonify({"error": str(exc)}), 500
 
 
 if __name__ == "__main__":
